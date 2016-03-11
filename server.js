@@ -41,6 +41,7 @@ app.post(prefix_api + '/tweet', function (req, res) {
         //get the tweets list and add this new tweet to that list
         var tweets = getTweetsFromJsonFile();
         if (tweets) {
+            console.log(newTweet);
             //add this tweet to tweet list
             tweets.push(newTweet);
             //write these tweet to json file
