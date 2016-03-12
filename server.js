@@ -3,6 +3,7 @@
  Module dependencies
  */
 var express = require('express'),
+    morgan = require('morgan'),
     path = require('path'),
     jsonfile = require('jsonfile'),
     bodyParser = require('body-parser'),
@@ -19,6 +20,9 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+
+//use from morgan to logging these request into console
+app.use(morgan('combined'));
 
 /**
  helper functions for get data from json files
@@ -41,7 +45,6 @@ app.post(prefix_api + '/tweet', function (req, res) {
         //get the tweets list and add this new tweet to that list
         var tweets = getTweetsFromJsonFile();
         if (tweets) {
-            console.log(newTweet);
             //add this tweet to tweet list
             tweets.push(newTweet);
             //write these tweet to json file
@@ -90,10 +93,10 @@ app.get(prefix_api + '/tweet', function (req, res) {
                     result.push(tweet);
                 }
             });
-            res.json(result);
+            res.json(result.reverse());
         }
         else {
-            res.json(tweets);
+            res.json(tweets.reverse());
         }
     }
     else {
