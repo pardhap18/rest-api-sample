@@ -76,11 +76,15 @@ pipeline {
         stage('Update Chart Info') {
             steps {
                 script {
-                    datas = readYaml (file: './flux-test-noderest-api-app/values-dev.yaml')
+                    datas = readYaml (file: './flux-test-noderest-api-app/Chart.yaml')
                     new_chart_version = nextVersion('major', datas.version)
                     echo "Got version as ${datas.version} and New Version is ${new_chart_version}"
                     // datas.version = new_chart_version
                     // datas.appVersion = "${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT}"
+                }
+                sh "rm -rf ./flux-test-noderest-api-app/Chart.yaml"
+                script {
+                    writeYaml (file: './flux-test-noderest-api-app/Chart.yaml', data: datas)
                 }
             }
             
