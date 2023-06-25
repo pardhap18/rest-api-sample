@@ -131,7 +131,7 @@ pipeline {
                 // github cli action
                 withCredentials([usernamePassword(credentialsId: 'github-id', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     sh(label: 'gh auth login', script: "echo \${GIT_PASSWORD}|gh auth login --with-token")
-                    sh("gh pr create --base origin/main --head feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes --title dev-deploy-${BUILD_NUM_ENV}-changes --body dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes")
+                    sh("gh pr create --base main --head feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes --title dev-deploy-${BUILD_NUM_ENV}-changes --body dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes")
                     sh(label: 'gh logout', script: 'gh auth logout')
 
                 }
@@ -173,14 +173,13 @@ pipeline {
                         git add .
                         git commit -am  "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} stg Changes"
                         git push -u origin feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
-                        gh pr create --base origin/main --head feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
                     '''
                     //git request-pull origin/main feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
   
                 }
                 withCredentials([usernamePassword(credentialsId: 'github-id', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     sh(label: 'gh auth login', script: "echo \${GIT_PASSWORD}|gh auth login --with-token")
-                    sh("gh pr create --base origin/main --head feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes --title stg-deploy-${BUILD_NUM_ENV}-changes --body stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes")
+                    sh("gh pr create --base main --head feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes --title stg-deploy-${BUILD_NUM_ENV}-changes --body stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes")
                     sh(label: 'gh logout', script: 'gh auth logout')
 
                 }
