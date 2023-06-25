@@ -42,6 +42,8 @@ pipeline {
                 }
                 */
 
+                /*
+
                 withCredentials([file(credentialsId: 'gcp-creds', variable: 'GC_KEY')]) {
                     sh("gcloud auth activate-service-account --key-file=${GC_KEY}")
                     sh("gcloud auth configure-docker northamerica-northeast2-docker.pkg.dev")
@@ -50,6 +52,7 @@ pipeline {
                 
                 //sh 'docker rmi ${IMAGE_NAME}:${IMAGE_TAG}'
                 echo 'Build docker image Finish'
+                */
             }
         }
 
@@ -72,72 +75,77 @@ pipeline {
         }
         stage('Update Chart Info') {
             steps {
-                sh "ls -lrt"
+                script {
+                    datas = readYaml (file: './flux-test-noderest-api-app/values-dev.yaml')
+                    new_chart_version = nextVersion('major', datas.version)
+                    echo "Got version as ${datas.version} and New Version is ${new_chart_version}"
+                    // datas.version = new_chart_version
+                    // datas.appVersion = "${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT}"
+                }
             }
             
         }
-    }
-        /*
-        stage('Update Chart Info') {
-            steps {
-                script {
-                    datas = readYaml (file: './charts/flux-test-app/Chart.yaml')
-                    new_chart_version = nextVersion('major', datas.version)
-                    echo "Got version as ${datas.version} and New Version is ${new_chart_version}"
-                    datas.version = new_chart_version
-                    datas.appVersion = "${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT}"
-                }
-                sh "rm -rf ./charts/flux-test-app/Chart.yaml"
-                script {
-                    writeYaml (file: './charts/flux-test-app/Chart.yaml', data: datas)
-                }
-
-            }
-        }
         stage('Dev Promotion') {
             steps {
+                sh("docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:dev-${IMAGE_TAG}")
+                withCredentials([file(credentialsId: 'gcp-creds', variable: 'GC_KEY')]) {
+                    sh("gcloud auth activate-service-account --key-file=${GC_KEY}")
+                    sh("gcloud auth configure-docker northamerica-northeast2-docker.pkg.dev")
+                    sh("docker push ${IMAGE_NAME}:dev-${IMAGE_TAG}")
+                }
+                
+                sh("docker rmi ${IMAGE_NAME}:dev-${IMAGE_TAG}")
+                echo 'Build Push Finish'
                 script {
-                    tag_data = readYaml (file: './charts/flux-test-app/values-dev.yaml')
+                    tag_data = readYaml (file: './flux-test-noderest-api-app/values-dev.yaml')
                     echo "Got version as ${tag_data.image.tag}"
-                    tag_data.image.tag = "${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT}" 
+                    tag_data.image.tag = "${BUILD_NUM_ENV}-dev-${GIT_COMMIT_SHORT}" 
                 }
-                sh "rm -rf ./charts/flux-test-app/values-dev.yaml"
+                sh "rm -rf ./flux-test-noderest-api-app/values-dev.yaml"
                 script {
-                    writeYaml (file: './charts/flux-test-app/values-dev.yaml', data: tag_data)
+                    writeYaml (file: './flux-test-noderest-api-app/values-dev.yaml', data: tag_data)
                 }
-
+                
             }
         }
-        stage('Staging Promotion') {
+        stage('Stage Promotion') {
             steps {
+                sh("docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:stg-${IMAGE_TAG}")
+                withCredentials([file(credentialsId: 'gcp-creds', variable: 'GC_KEY')]) {
+                    sh("gcloud auth activate-service-account --key-file=${GC_KEY}")
+                    sh("gcloud auth configure-docker northamerica-northeast2-docker.pkg.dev")
+                    sh("docker push ${IMAGE_NAME}:stg-${IMAGE_TAG}")
+                }
+                
+                sh("docker rmi ${IMAGE_NAME}:stg-${IMAGE_TAG}")
+                echo 'Build Push Finish'
                 script {
-                    tag_data = readYaml (file: './charts/flux-test-app/values-staging.yaml')
+                    tag_data = readYaml (file: './flux-test-noderest-api-app/values-staging.yaml')
                     echo "Got version as ${tag_data.image.tag}"
-                    tag_data.image.tag = "${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT}"  
+                    tag_data.image.tag = "${BUILD_NUM_ENV}-stg-${GIT_COMMIT_SHORT}" 
                 }
-                sh "rm -rf ./charts/flux-test-app/values-staging.yaml"
+                sh "rm -rf ./flux-test-noderest-api-app/values-staging.yaml"
                 script {
-                    writeYaml (file: './charts/flux-test-app/values-staging.yaml', data: tag_data)
+                    writeYaml (file: './flux-test-noderest-api-app/values-staging.yaml', data: tag_data)
                 }
-
+                
             }
         }
         stage('Git Push') {
-            steps {
-                withCredentials([
-                    gitUsernamePassword(credentialsId: 'github-id', gitToolName: 'Default')
-                ]) {
-                    sh '''
-                        git config --global user.email "pardhap18@gmail.com"
-                        git config --global user.name "Pardha"
-                        git add .
-                        git commit -am "${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} deploy changes"
-                        git push -u origin main
-                    '''
-                }
+            withCredentials([
+                gitUsernamePassword(credentialsId: 'github-id', gitToolName: 'Default')
+            ]) {
+                sh '''
+                    git config --global user.email "pardhap18@gmail.com"
+                    git config --global user.name "Pardha"
+                    git add .
+                    git commit -am "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} Changes"
+                    git push -u origin main
+                '''
             }
         }
-        */
+    }
+       
 }
 
 def nextVersion(scope, latestVersion) {
