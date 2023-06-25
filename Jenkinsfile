@@ -80,7 +80,7 @@ pipeline {
                     new_chart_version = nextVersion('major', datas.version)
                     echo "Got version as ${datas.version} and New Version is ${new_chart_version}"
                     // datas.version = new_chart_version
-                    // datas.appVersion = "${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT}"
+                    datas.appVersion = "${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT}"
                 }
                 sh "rm -rf ./flux-test-noderest-api-app/Chart.yaml"
                 script {
@@ -103,7 +103,7 @@ pipeline {
                 script {
                     tag_data = readYaml (file: './flux-test-noderest-api-app/values-dev.yaml')
                     echo "Got version as ${tag_data.image.tag}"
-                    tag_data.image.tag = "${BUILD_NUM_ENV}-dev-${GIT_COMMIT_SHORT}" 
+                    tag_data.image.tag = "dev-${IMAGE_TAG}" 
                 }
                 sh "rm -rf ./flux-test-noderest-api-app/values-dev.yaml"
                 script {
@@ -126,7 +126,7 @@ pipeline {
                 script {
                     tag_data = readYaml (file: './flux-test-noderest-api-app/values-staging.yaml')
                     echo "Got version as ${tag_data.image.tag}"
-                    tag_data.image.tag = "${BUILD_NUM_ENV}-stg-${GIT_COMMIT_SHORT}" 
+                    tag_data.image.tag = "stg-${IMAGE_TAG}" 
                 }
                 sh "rm -rf ./flux-test-noderest-api-app/values-staging.yaml"
                 script {
