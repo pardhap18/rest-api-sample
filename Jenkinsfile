@@ -71,7 +71,10 @@ pipeline {
 
         }
         stage('Update Chart Info') {
-            sh "ls -lrt"
+            steps {
+                sh "ls -lrt"
+            }
+            
         }
     }
         /*
