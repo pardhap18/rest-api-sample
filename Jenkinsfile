@@ -75,6 +75,12 @@ pipeline {
         }
         stage('Update Chart Info') {
             steps {
+                
+                sh '''
+                    git config --global user.email "pardhap18@gmail.com"
+                    git config --global user.name "Pardha"
+                    git checkout -b dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                '''
                 script {
                     datas = readYaml (file: './flux-test-noderest-api-app/Chart.yaml')
                     new_chart_version = nextVersion('major', datas.version)
@@ -109,6 +115,10 @@ pipeline {
                 script {
                     writeYaml (file: './flux-test-noderest-api-app/values-dev.yaml', data: tag_data)
                 }
+                sh '''
+                    git commit -am  "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} Changes"
+                    git request-pull origin/main dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                '''
                 
             }
         }
@@ -123,6 +133,11 @@ pipeline {
                 
                 sh("docker rmi ${IMAGE_NAME}:stg-${IMAGE_TAG}")
                 echo 'Build Push Finish'
+                sh '''
+                    git config --global user.email "pardhap18@gmail.com"
+                    git config --global user.name "Pardha"
+                    git checkout -b stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                '''
                 script {
                     tag_data = readYaml (file: './flux-test-noderest-api-app/values-staging.yaml')
                     echo "Got version as ${tag_data.image.tag}"
@@ -132,6 +147,10 @@ pipeline {
                 script {
                     writeYaml (file: './flux-test-noderest-api-app/values-staging.yaml', data: tag_data)
                 }
+                sh '''
+                    git commit -am  "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} Changes"
+                    git request-pull origin/main stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                '''
                 
             }
         }
