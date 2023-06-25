@@ -79,7 +79,7 @@ pipeline {
                 sh '''
                     git config --global user.email "pardhap18@gmail.com"
                     git config --global user.name "Pardha"
-                    git checkout -b dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                    git checkout -b feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
                 '''
                 script {
                     datas = readYaml (file: './flux-test-noderest-api-app/Chart.yaml')
@@ -115,10 +115,19 @@ pipeline {
                 script {
                     writeYaml (file: './flux-test-noderest-api-app/values-dev.yaml', data: tag_data)
                 }
-                sh '''
-                    git commit -am  "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} Changes"
-                    git request-pull origin/main dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
-                '''
+                // Creation of Remote branch
+                withCredentials([
+                    gitUsernamePassword(credentialsId: 'github-id', gitToolName: 'Default')
+                ]) {
+                    sh '''
+                        git config --global user.email "pardhap18@gmail.com"
+                        git config --global user.name "Pardha"
+                        git add .
+                        git commit -am  "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} dev Changes"
+                        git push -u origin feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                        git request-pull origin/main feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                    '''
+                }
                 
             }
         }
@@ -136,7 +145,7 @@ pipeline {
                 sh '''
                     git config --global user.email "pardhap18@gmail.com"
                     git config --global user.name "Pardha"
-                    git checkout -b stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                    git checkout -b feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
                 '''
                 script {
                     tag_data = readYaml (file: './flux-test-noderest-api-app/values-staging.yaml')
@@ -147,13 +156,23 @@ pipeline {
                 script {
                     writeYaml (file: './flux-test-noderest-api-app/values-staging.yaml', data: tag_data)
                 }
-                sh '''
-                    git commit -am  "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} Changes"
-                    git request-pull origin/main stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
-                '''
+                // Creation of Remote branch
+                withCredentials([
+                    gitUsernamePassword(credentialsId: 'github-id', gitToolName: 'Default')
+                ]) {
+                    sh '''
+                        git config --global user.email "pardhap18@gmail.com"
+                        git config --global user.name "Pardha"
+                        git add .
+                        git commit -am  "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} stg Changes"
+                        git push -u origin feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                        git request-pull origin/main feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                    '''
+                }
                 
             }
         }
+        /*
         stage('Git Push') {
             steps {
                 withCredentials([
@@ -170,6 +189,7 @@ pipeline {
             }
             
         }
+        */
     }
        
 }
