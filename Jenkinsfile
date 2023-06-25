@@ -132,17 +132,20 @@ pipeline {
             }
         }
         stage('Git Push') {
-            withCredentials([
-                gitUsernamePassword(credentialsId: 'github-id', gitToolName: 'Default')
-            ]) {
-                sh '''
-                    git config --global user.email "pardhap18@gmail.com"
-                    git config --global user.name "Pardha"
-                    git add .
-                    git commit -am "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} Changes"
-                    git push -u origin main
-                '''
+            steps {
+                withCredentials([
+                    gitUsernamePassword(credentialsId: 'github-id', gitToolName: 'Default')
+                ]) {
+                    sh '''
+                        git config --global user.email "pardhap18@gmail.com"
+                        git config --global user.name "Pardha"
+                        git add .
+                        git commit -am "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} Changes"
+                        git push -u origin main
+                    '''
+                }
             }
+            
         }
     }
        
