@@ -132,7 +132,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'github-id', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     sh(label: 'gh auth login', script: "echo \${GIT_PASSWORD}|gh auth login --with-token")
                     sh("gh pr create --base main --head feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes --title dev-deploy-${BUILD_NUM_ENV}-changes --body dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes")
-                    sh(label: 'gh logout', script: 'gh auth logout')
+                    //sh(label: 'gh logout', script: 'gh auth logout')
 
                 }
                 
@@ -180,7 +180,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'github-id', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                     sh(label: 'gh auth login', script: "echo \${GIT_PASSWORD}|gh auth login --with-token")
                     sh("gh pr create --base main --head feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes --title stg-deploy-${BUILD_NUM_ENV}-changes --body stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes")
-                    sh(label: 'gh logout', script: 'gh auth logout')
+                    //sh(label: 'gh logout', script: 'gh auth logout')
 
                 }
                 
