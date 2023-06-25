@@ -125,8 +125,9 @@ pipeline {
                         git add .
                         git commit -am  "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} dev Changes"
                         git push -u origin feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
-                        git request-pull origin/main feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                        gh pr create --base origin/main --head feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
                     '''
+                    //git request-pull origin/main feature/dev-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
                 }
                 
             }
@@ -166,8 +167,9 @@ pipeline {
                         git add .
                         git commit -am  "flux-test-noderest-api-app ${BUILD_NUM_ENV}-${GIT_COMMIT_SHORT} stg Changes"
                         git push -u origin feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
-                        git request-pull origin/main feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
+                        gh pr create --base origin/main --head feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
                     '''
+                    //git request-pull origin/main feature/stg-flux-test-noderest-api-app-${BUILD_NUM_ENV}-changes
                 }
                 
             }
