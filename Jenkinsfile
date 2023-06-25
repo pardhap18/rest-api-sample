@@ -19,20 +19,13 @@ pipeline {
         GCP_PROJECT = "my-cd-cd-learn-gke"
     }
     stages {
-        stage('Checkout external proj') {
+        stage('Checkout source repo') {
             steps {
                 git branch: 'simple_rest_api',
                 credentialsId: 'github-id',
                 url: 'https://github.com/pardhap18/rest-api-sample.git'
             }
         }
-        /*
-        stage('Build') {
-            steps {
-                sh "mvn install"
-            }
-        }
-        */
         stage('Image creation') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
@@ -69,6 +62,17 @@ pipeline {
                 '''
             }
             */
+        stage('Checkout Charts') {
+            steps {
+                git branch: 'main',
+                credentialsId: 'github-id',
+                url: 'https://github.com/pardhap18/separated-flux-test-helm-charts.git'
+            }
+
+        }
+        stage('Update Chart Info') {
+            sh "ls -lrt"
+        }
     }
         /*
         stage('Update Chart Info') {
