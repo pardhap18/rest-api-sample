@@ -26,11 +26,13 @@ pipeline {
                 url: 'https://github.com/pardhap18/rest-api-sample.git'
             }
         }
+        /*
         stage('Build') {
             steps {
                 sh "mvn install"
             }
         }
+        */
         stage('Image creation') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
